@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: artid-postgres
+    environment:
+      POSTGRES_DB: artiddb
+      POSTGRES_USER: artid
+      POSTGRES_PASSWORD: artid
+    ports:
+      - "5432:5432"
+    volumes:
+      - artid_pgdata:/var/lib/postgresql/data
+
+volumes:
+  artid_pgdata:
