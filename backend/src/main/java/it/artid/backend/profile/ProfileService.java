@@ -23,7 +23,6 @@ public class ProfileService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profilo non trovato"));
         if (req.getFullName()    != null) profile.setFullName(req.getFullName());
         if (req.getInstitution() != null) profile.setInstitution(req.getInstitution());
-        if (req.getCourse()      != null) profile.setCourse(req.getCourse());
         if (req.getStudyYear()   != null) profile.setStudyYear(req.getStudyYear());
         if (req.getBio()         != null) profile.setBio(req.getBio());
         return profileRepository.save(profile);

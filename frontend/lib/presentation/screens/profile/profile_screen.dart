@@ -88,7 +88,7 @@ class _IdentityCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(profile.institution, style: text.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          Text('${profile.course} · ${profile.studyYear}° anno', style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant)),
+          Text('${profile.studyYear}° anno', style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant)),
         ],
       ),
     );

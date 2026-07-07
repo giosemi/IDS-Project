@@ -11,7 +11,6 @@ public class StudentProfileEntity {
     @Column(nullable = false) private String fullName;
     private String email;
     private String institution;
-    private String course;
     private int studyYear;
     @Column(columnDefinition = "TEXT") private String bio;
 }

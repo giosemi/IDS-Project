@@ -47,7 +47,7 @@ public class AuthService {
                 .userId(user.getId())
                 .fullName(fullName)
                 .email(user.getEmail())
-                .institution(req.getInstitution().trim()).course("").studyYear(1).bio("")
+                .institution(req.getInstitution().trim()).studyYear(1).bio("")
                 .build();
         profileRepository.save(profile);
 

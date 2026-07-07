@@ -17,14 +17,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController? _nameController;
   TextEditingController? _institutionController;
-  TextEditingController? _courseController;
   TextEditingController? _yearController;
   TextEditingController? _bioController;
 
   void _initControllers(StudentProfile profile) {
     _nameController ??= TextEditingController(text: profile.fullName);
     _institutionController ??= TextEditingController(text: profile.institution);
-    _courseController ??= TextEditingController(text: profile.course);
     _yearController ??= TextEditingController(text: profile.studyYear.toString());
     _bioController ??= TextEditingController(text: profile.bio);
   }
@@ -33,7 +31,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void dispose() {
     _nameController?.dispose();
     _institutionController?.dispose();
-    _courseController?.dispose();
     _yearController?.dispose();
     _bioController?.dispose();
     super.dispose();
@@ -46,7 +43,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final updated = current.copyWith(
       fullName: _nameController!.text.trim(),
       institution: _institutionController!.text.trim(),
-      course: _courseController!.text.trim(),
       studyYear: int.parse(_yearController!.text.trim()),
       bio: _bioController!.text.trim(),
     );
@@ -83,8 +79,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               TextFormField(controller: _nameController, decoration: const InputDecoration(labelText: 'Nome completo'), validator: _required),
               const SizedBox(height: AppSpacing.md),
               TextFormField(controller: _institutionController, decoration: const InputDecoration(labelText: 'Istituzione AFAM'), validator: _required),
-              const SizedBox(height: AppSpacing.md),
-              TextFormField(controller: _courseController, decoration: const InputDecoration(labelText: 'Corso / Indirizzo'), validator: _required),
               const SizedBox(height: AppSpacing.md),
               TextFormField(
                 controller: _yearController,

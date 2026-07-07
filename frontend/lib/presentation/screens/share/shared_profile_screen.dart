@@ -235,7 +235,7 @@ class _SharedProfileHeader extends StatelessWidget {
           const SizedBox(height: 4),
           Text(profile.institution, style: Theme.of(context).textTheme.bodyMedium),
           Text(
-            '${profile.course} · ${profile.studyYear}° anno',
+            '${profile.studyYear}° anno',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
           ),
           if (profile.bio.isNotEmpty) ...[
