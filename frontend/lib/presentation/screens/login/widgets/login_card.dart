@@ -19,7 +19,6 @@ class _LoginCardState extends ConsumerState<LoginCard> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
-  bool _rememberMe = false;
 
   @override
   void dispose() {
@@ -44,10 +43,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
     if (!_formKey.currentState!.validate()) return;
 
     final email = _emailController.text.trim();
-    final response = await ref.read(authProvider.notifier).requestLoginOtp(
-          email: email,
-          password: _passwordController.text,
-        );
+    final response = await ref.read(authProvider.notifier).requestLoginOtp(email: email, password: _passwordController.text);
 
     if (!mounted) return;
 
@@ -134,19 +130,9 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Checkbox(value: _rememberMe, onChanged: (value) => setState(() => _rememberMe = value ?? false)),
-                          const Text('Ricordami'),
-                        ],
-                      ),
-                    ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(builder: (_) => const ForgotPasswordScreen()),
-                        );
+                        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ForgotPasswordScreen()));
                       },
                       child: const Text('Password dimenticata?'),
                     ),

@@ -14,6 +14,7 @@ class ContentItem {
     this.subtitle,
     this.fileName,
     this.filePath,
+    this.hasMedia = false,
   });
 
   final String id;
@@ -28,6 +29,7 @@ class ContentItem {
   final String? subtitle;
   final String? fileName;
   final String? filePath;
+  final bool hasMedia;
 
   factory ContentItem.fromJson(Map<String, dynamic> json) {
     return ContentItem(
@@ -42,6 +44,7 @@ class ContentItem {
       duration: json['duration'] as String?,
       subtitle: json['subtitle'] as String?,
       fileName: json['fileName'] as String?,
+      hasMedia: json['hasMedia'] as bool? ?? false,
     );
   }
 
@@ -68,6 +71,7 @@ class ContentItem {
     String? subtitle,
     String? fileName,
     String? filePath,
+    bool? hasMedia,
   }) {
     return ContentItem(
       id: id,
@@ -82,6 +86,7 @@ class ContentItem {
       subtitle: subtitle ?? this.subtitle,
       fileName: fileName ?? this.fileName,
       filePath: filePath ?? this.filePath,
+      hasMedia: hasMedia ?? this.hasMedia,
     );
   }
 }

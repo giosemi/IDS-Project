@@ -75,9 +75,27 @@ class _AddContentScreenState extends ConsumerState<AddContentScreen> {
 
   bool get _showsDurationFields => _type == ContentType.audio || _type == ContentType.video;
 
-  void _applyFile(PlatformFile file) {
+  Future<void> _showInvalidFormatDialog() {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Formato non valido'),
+        content: Text(
+          'Il file selezionato non è supportato.\n\nFormati consentiti:\n${ContentFileFormats.formatsHint}',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _applyFile(PlatformFile file) async {
     if (!ContentFileFormats.isAllowed(file.name)) {
-      AppSnackBar.error(context, 'Formato file non consentito');
+      await _showInvalidFormatDialog();
       return;
     }
 
@@ -103,13 +121,13 @@ class _AddContentScreenState extends ConsumerState<AddContentScreen> {
     setState(() => _isPickingFile = true);
 
     try {
-      final result = await FilePicker.pickFiles(type: FileType.custom, allowedExtensions: ContentFileFormats.allowedExtensions, withData: false);
+      final result = await FilePicker.pickFiles(type: FileType.any, withData: false);
 
       if (!mounted) return;
       setState(() => _isPickingFile = false);
 
       if (result == null || result.files.isEmpty) return;
-      _applyFile(result.files.first);
+      await _applyFile(result.files.first);
     } on MissingPluginException {
       if (!mounted) return;
       setState(() => _isPickingFile = false);
@@ -146,7 +164,7 @@ class _AddContentScreenState extends ConsumerState<AddContentScreen> {
     final resolvedType = _selectedFile != null ? ContentFileFormats.resolveType(_selectedFile!.name, pdfAs: _pdfType) : (_removedExistingFile ? null : widget.content?.type);
 
     if (resolvedType == null) {
-      AppSnackBar.error(context, 'Formato file non riconosciuto');
+      AppSnackBar.error(context, 'Formato non valido');
       return;
     }
 
@@ -158,13 +176,24 @@ class _AddContentScreenState extends ConsumerState<AddContentScreen> {
     final item = ContentItem(id: widget.content?.id ?? 'local-${DateTime.now().millisecondsSinceEpoch}', title: _titleController.text.trim(), subtitle: _subtitleController.text.trim().isEmpty ? null : _subtitleController.text.trim(), year: int.parse(_yearController.text.trim()), description: _descriptionController.text.trim(), ownerId: user.id, type: resolvedType, technique: _techniqueController.text.trim().isEmpty ? null : _techniqueController.text.trim(), dimensions: _dimensionsController.text.trim().isEmpty ? null : _dimensionsController.text.trim(), duration: _durationController.text.trim().isEmpty ? null : _durationController.text.trim(), fileName: _selectedFile?.name ?? (_removedExistingFile ? null : widget.content?.fileName), filePath: _selectedFile?.path ?? (_removedExistingFile ? null : widget.content?.filePath));
 
     if (widget.isEditing) {
-      await ref.read(userContentsProvider.notifier).update(item);
+      final ok = await ref.read(userContentsProvider.notifier).update(item);
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      if (!ok) {
+        AppSnackBar.error(context, 'Impossibile salvare l\'opera. Verifica connessione e file selezionato.');
+        return;
+      }
     } else {
-      await ref.read(userContentsProvider.notifier).add(item);
+      final ok = await ref.read(userContentsProvider.notifier).add(item);
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      if (!ok) {
+        AppSnackBar.error(context, 'Impossibile aggiungere l\'opera. Verifica connessione e file selezionato.');
+        return;
+      }
     }
 
     if (!mounted) return;
-    setState(() => _isSaving = false);
     Navigator.of(context).pop();
     AppSnackBar.success(context, widget.isEditing ? 'Opera aggiornata' : 'Opera aggiunta al portfolio');
   }

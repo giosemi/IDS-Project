@@ -5,7 +5,9 @@ import it.artid.backend.content.ContentService;
 import it.artid.backend.profile.ProfileService;
 import it.artid.backend.profile.StudentProfileEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -67,4 +69,16 @@ public class ShareLinksService {
     }
 
     public record SharedView(String label, String token, StudentProfileEntity profile, List<ContentItemEntity> items) {}
+
+    public ResponseEntity<Resource> loadSharedMedia(String token, String contentId) {
+        var link = shareLinkRepository.findByToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Link non trovato"));
+        if (link.isExpired()) {
+            throw new ResponseStatusException(HttpStatus.GONE, "Link scaduto");
+        }
+        if (!link.getContentIds().contains(contentId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contenuto non condiviso");
+        }
+        return contentService.loadMedia(contentId);
+    }
 }

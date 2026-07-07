@@ -53,16 +53,26 @@ class UserContentsNotifier extends Notifier<UserContentsState> {
     }
   }
 
-  Future<void> add(ContentItem item) async {
+  Future<bool> add(ContentItem item) async {
     try {
-      final created = await ref.read(contentApiServiceProvider).create(item);
+      final created = await ref.read(contentApiServiceProvider).create(
+            item,
+            filePath: item.filePath,
+          );
       state = state.copyWith(items: [...state.items, created]);
-    } catch (_) {}
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
-  Future<void> update(ContentItem item) async {
+  Future<bool> update(ContentItem item) async {
     try {
-      final updated = await ref.read(contentApiServiceProvider).update(item.id, item);
+      final updated = await ref.read(contentApiServiceProvider).update(
+            item.id,
+            item,
+            filePath: item.filePath,
+          );
       final index = state.items.indexWhere((e) => e.id == item.id);
       if (index >= 0) {
         final items = [...state.items]..[index] = updated;
@@ -70,7 +80,10 @@ class UserContentsNotifier extends Notifier<UserContentsState> {
       } else {
         state = state.copyWith(items: [...state.items, updated]);
       }
-    } catch (_) {}
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> remove(String id) async {

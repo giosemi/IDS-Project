@@ -18,4 +18,7 @@ public class ContentItemEntity {
     private String duration;
     private String subtitle;
     private String fileName;
+
+    @Transient
+    private boolean hasMedia;
 }

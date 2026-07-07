@@ -2,7 +2,7 @@ import 'package:artid/domain/models/content_type.dart';
 
 abstract final class ContentFileFormats {
   static const audio = ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'];
-  static const video = ['mp4', 'mov', 'webm', 'mkv'];
+  static const video = ['mov', 'webm', 'mkv'];
   static const score = ['musicxml', 'mxl', 'mid', 'midi'];
   static const cv = ['doc', 'docx'];
   static const image = ['jpg', 'jpeg', 'png', 'webp'];

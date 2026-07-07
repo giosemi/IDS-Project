@@ -3,6 +3,7 @@ package it.artid.backend.share;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,12 @@ public class ShareLinksController {
     @GetMapping("/api/s/{token}")
     public ResponseEntity<ShareLinksService.SharedView> view(@PathVariable String token) {
         return ResponseEntity.ok(shareLinksService.viewByToken(token));
+    }
+
+    @GetMapping("/api/s/{token}/content/{contentId}/media")
+    public ResponseEntity<Resource> sharedMedia(
+            @PathVariable String token,
+            @PathVariable String contentId) {
+        return shareLinksService.loadSharedMedia(token, contentId);
     }
 }

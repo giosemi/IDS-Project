@@ -79,7 +79,7 @@ class _SharedView extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (_) => ContentDetailScreen(contentId: item.id),
+                        builder: (_) => ContentDetailScreen(content: item, shareToken: view.token),
                       ),
                     );
                   },

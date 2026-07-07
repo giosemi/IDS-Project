@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:artid/data/api/api_client.dart';
 import 'package:artid/domain/models/content_item.dart';
 import 'package:dio/dio.dart';
@@ -16,7 +18,22 @@ class ContentApiService {
         .toList();
   }
 
-  Future<ContentItem> create(ContentItem item) async {
+  Future<ContentItem> create(ContentItem item, {String? filePath}) async {
+    if (filePath != null && filePath.isNotEmpty) {
+      final formData = FormData.fromMap({
+        'data': MultipartFile.fromString(
+          jsonEncode(item.toJson()),
+          contentType: DioMediaType.parse('application/json'),
+        ),
+        'file': await MultipartFile.fromFile(
+          filePath,
+          filename: item.fileName ?? 'file',
+        ),
+      });
+      final res = await _dio.post<Map<String, dynamic>>('/api/content', data: formData);
+      return ContentItem.fromJson(res.data!);
+    }
+
     final res = await _dio.post<Map<String, dynamic>>(
       '/api/content',
       data: item.toJson(),
@@ -24,7 +41,22 @@ class ContentApiService {
     return ContentItem.fromJson(res.data!);
   }
 
-  Future<ContentItem> update(String id, ContentItem item) async {
+  Future<ContentItem> update(String id, ContentItem item, {String? filePath}) async {
+    if (filePath != null && filePath.isNotEmpty) {
+      final formData = FormData.fromMap({
+        'data': MultipartFile.fromString(
+          jsonEncode(item.toJson()),
+          contentType: DioMediaType.parse('application/json'),
+        ),
+        'file': await MultipartFile.fromFile(
+          filePath,
+          filename: item.fileName ?? 'file',
+        ),
+      });
+      final res = await _dio.put<Map<String, dynamic>>('/api/content/$id', data: formData);
+      return ContentItem.fromJson(res.data!);
+    }
+
     final res = await _dio.put<Map<String, dynamic>>(
       '/api/content/$id',
       data: item.toJson(),

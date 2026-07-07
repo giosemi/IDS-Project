@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -102,6 +103,41 @@ class ContentControllerTest {
         mockMvc.perform(delete("/api/content/" + item.getId())
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void createContentWithFile_shouldStoreMedia() throws Exception {
+        var req = new ContentRequest();
+        req.setTitle("Foto opera");
+        req.setDescription("Descrizione");
+        req.setYear(2024);
+        req.setType(ContentType.CV);
+        req.setFileName("opera.jpg");
+
+        var data = new MockMultipartFile(
+                "data",
+                "data",
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(req));
+        var file = new MockMultipartFile(
+                "file",
+                "opera.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "fake-image-bytes".getBytes());
+
+        var result = mockMvc.perform(multipart("/api/content")
+                .file(data)
+                .file(file)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.hasMedia").value(true))
+                .andReturn();
+
+        var item = objectMapper.readValue(result.getResponse().getContentAsString(), ContentItemEntity.class);
+
+        mockMvc.perform(get("/api/content/" + item.getId() + "/media")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
     }
 
     @Test

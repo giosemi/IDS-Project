@@ -1,6 +1,8 @@
 import 'package:artid/core/costants/app_spacing.dart';
+import 'package:artid/domain/models/content_item.dart';
 import 'package:artid/presentation/layout/layout.dart';
 import 'package:artid/presentation/screens/portfolio/add_content_screen.dart';
+import 'package:artid/presentation/widgets/content_media_viewer.dart';
 import 'package:artid/presentation/widgets/app_snack_bar.dart';
 import 'package:artid/providers/portfolio/portfolio_provider.dart';
 import 'package:artid/providers/portfolio/user_contents_provider.dart';
@@ -8,9 +10,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ContentDetailScreen extends ConsumerWidget {
-  const ContentDetailScreen({super.key, required this.contentId});
+  ContentDetailScreen({
+    super.key,
+    this.content,
+    this.shareToken,
+    String? contentId,
+  }) : contentId = contentId ?? content?.id {
+    assert(content != null || contentId != null, 'Serve content o contentId');
+  }
 
-  final String contentId;
+  final ContentItem? content;
+  final String? shareToken;
+  final String? contentId;
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
@@ -31,7 +42,7 @@ class ContentDetailScreen extends ConsumerWidget {
 
     if (confirmed != true || !context.mounted) return;
 
-    await ref.read(userContentsProvider.notifier).remove(contentId);
+    await ref.read(userContentsProvider.notifier).remove(contentId!);
     if (!context.mounted) return;
     Navigator.of(context).pop();
     AppSnackBar.success(context, 'Opera eliminata');
@@ -39,8 +50,8 @@ class ContentDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final item = ref.watch(contentByIdProvider(contentId));
-    final canManage = ref.watch(canManageContentProvider(contentId));
+    final item = content ?? (contentId != null ? ref.watch(contentByIdProvider(contentId!)) : null);
+    final canManage = contentId != null ? ref.watch(canManageContentProvider(contentId!)) : false;
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
@@ -61,13 +72,7 @@ class ContentDetailScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AspectRatio(
-              aspectRatio: 4 / 3,
-              child: Container(
-                decoration: BoxDecoration(color: colors.primaryContainer, borderRadius: BorderRadius.circular(16)),
-                child: Icon(item.type.icon, size: 80, color: colors.onPrimaryContainer),
-              ),
-            ),
+            ContentMediaViewer(item: item, shareToken: shareToken),
             const SizedBox(height: AppSpacing.md),
             Text(item.title, style: text.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
             if (item.subtitle != null) ...[const SizedBox(height: AppSpacing.sm), Text(item.subtitle!, style: text.titleMedium?.copyWith(color: colors.primary))],
