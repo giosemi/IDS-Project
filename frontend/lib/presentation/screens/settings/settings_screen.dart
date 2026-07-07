@@ -1,5 +1,4 @@
 import 'package:artid/core/costants/app_spacing.dart';
-import 'package:artid/core/theme/theme_provider.dart';
 import 'package:artid/presentation/screens/login/login_screen.dart';
 import 'package:artid/presentation/screens/register/register_screen.dart';
 import 'package:artid/providers/auth/auth_provider.dart';
@@ -16,28 +15,11 @@ class SettingsScreen extends ConsumerWidget {
     final user = authState.user;
     final isAuthenticated = authState.isAuthenticated;
     final isGuest = authState.isGuest;
-    final themeMode = ref.watch(themeProvider);
-    final isDark = themeMode == ThemeMode.dark || (themeMode == ThemeMode.system && MediaQuery.platformBrightnessOf(context) == Brightness.dark);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xl),
       children: [
         _ProfileHeader(isAuthenticated: isAuthenticated, isGuest: isGuest, name: user?.name, email: user?.email),
-        const SizedBox(height: AppSpacing.lg),
-        const _SectionLabel('Aspetto'),
-        const SizedBox(height: AppSpacing.sm),
-        _SettingsGroup(
-          children: [
-            _SettingsTile(
-              icon: Icons.dark_mode_rounded,
-              iconColor: const Color(0xFF6C63FF),
-              title: 'Tema scuro',
-              subtitle: isDark ? 'Attivo' : 'Disattivo',
-              trailing: Switch.adaptive(value: isDark, onChanged: (_) => ref.read(themeProvider.notifier).toggleTheme(context)),
-              onTap: () => ref.read(themeProvider.notifier).toggleTheme(context),
-            ),
-          ],
-        ),
         const SizedBox(height: AppSpacing.lg),
         const _SectionLabel('Account'),
         const SizedBox(height: AppSpacing.sm),

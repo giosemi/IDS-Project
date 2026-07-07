@@ -14,9 +14,7 @@ class PortfolioScreen extends ConsumerWidget {
   }
 
   void _openDetail(BuildContext context, String contentId) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => ContentDetailScreen(contentId: contentId)),
-    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ContentDetailScreen(contentId: contentId)));
   }
 
   @override
@@ -30,12 +28,7 @@ class PortfolioScreen extends ConsumerWidget {
         else if (!grouped.isOrganized)
           GridView.builder(
             padding: const EdgeInsets.all(AppSpacing.md),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: AppSpacing.md,
-              crossAxisSpacing: AppSpacing.md,
-              childAspectRatio: 0.85,
-            ),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: AppSpacing.md, crossAxisSpacing: AppSpacing.md, childAspectRatio: 0.85),
             itemCount: grouped.allItems.length,
             itemBuilder: (context, index) {
               final item = grouped.allItems[index];
@@ -47,34 +40,15 @@ class PortfolioScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xl),
             children: [
               for (final section in grouped.sections) ...[
-                if (section.items.isNotEmpty) ...[
-                  _SectionHeader(title: section.section.title),
-                  const SizedBox(height: AppSpacing.sm),
-                  _ContentGrid(
-                    items: section.items,
-                    onTap: (item) => _openDetail(context, item.id),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
+                if (section.items.isNotEmpty) ...[_SectionHeader(title: section.section.title), const SizedBox(height: AppSpacing.sm), _ContentGrid(items: section.items, onTap: (item) => _openDetail(context, item.id)), const SizedBox(height: AppSpacing.lg)],
               ],
-              if (grouped.unassigned.isNotEmpty) ...[
-                _SectionHeader(title: 'Altre opere'),
-                const SizedBox(height: AppSpacing.sm),
-                _ContentGrid(
-                  items: grouped.unassigned,
-                  onTap: (item) => _openDetail(context, item.id),
-                ),
-              ],
+              if (grouped.unassigned.isNotEmpty) ...[_SectionHeader(title: 'Altre opere'), const SizedBox(height: AppSpacing.sm), _ContentGrid(items: grouped.unassigned, onTap: (item) => _openDetail(context, item.id))],
             ],
           ),
         Positioned(
           right: AppSpacing.md,
           bottom: AppSpacing.md,
-          child: FloatingActionButton.extended(
-            onPressed: () => _openAddContent(context),
-            icon: const Icon(Icons.add_rounded),
-            label: const Text('Nuova opera'),
-          ),
+          child: FloatingActionButton.extended(onPressed: () => _openAddContent(context), icon: const Icon(Icons.add_rounded), label: const Text('Nuova opera')),
         ),
       ],
     );
@@ -88,10 +62,7 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-    );
+    return Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700));
   }
 }
 
@@ -106,12 +77,7 @@ class _ContentGrid extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: AppSpacing.md,
-        crossAxisSpacing: AppSpacing.md,
-        childAspectRatio: 0.85,
-      ),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: AppSpacing.md, crossAxisSpacing: AppSpacing.md, childAspectRatio: 0.85),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
@@ -145,8 +111,6 @@ class _EmptyPortfolio extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: AppSpacing.lg),
-            OutlinedButton.icon(onPressed: onAdd, icon: const Icon(Icons.add_rounded), label: const Text('Nuova opera')),
           ],
         ),
       ),

@@ -19,7 +19,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
-        return ResponseEntity.ok(authService.login(req));
+    public ResponseEntity<OtpSentResponse> login(@Valid @RequestBody LoginRequest req) {
+        return ResponseEntity.ok(authService.initiateLogin(req));
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest req) {
+        return ResponseEntity.ok(authService.verifyLoginOtp(req));
+    }
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<OtpSentResponse> resendOtp(@Valid @RequestBody ResendOtpRequest req) {
+        return ResponseEntity.ok(authService.resendLoginOtp(req));
     }
 }

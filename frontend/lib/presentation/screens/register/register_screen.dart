@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart' hide SwitchTheme;
-import 'package:artid/core/theme/widgets/switch_theme.dart';
 import 'package:artid/presentation/screens/register/widgets/register_card.dart';
+import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -8,15 +7,13 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          const SafeArea(
-            child: Center(
-              child: SingleChildScrollView(padding: EdgeInsets.all(24), child: RegisterCard()),
-            ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: const RegisterCard(),
           ),
-          Positioned(top: MediaQuery.of(context).padding.top + 8, right: 16, child: const SwitchTheme()),
-        ],
+        ),
       ),
     );
   }

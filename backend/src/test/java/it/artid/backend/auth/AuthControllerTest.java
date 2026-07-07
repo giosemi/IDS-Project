@@ -68,7 +68,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void login_validCredentials_shouldReturn200() throws Exception {
+    void login_validCredentials_shouldSendOtp() throws Exception {
         var reg = new RegisterRequest();
         reg.setName("Luigi");
         reg.setEmail("luigi@test.it");
@@ -84,7 +84,36 @@ class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").isNotEmpty());
+                .andExpect(jsonPath("$.otpRequired").value(true))
+                .andExpect(jsonPath("$.email").value("luigi@test.it"));
+    }
+
+    @Test
+    void verifyOtp_validCode_shouldReturnToken() throws Exception {
+        var reg = new RegisterRequest();
+        reg.setName("Anna");
+        reg.setEmail("anna@test.it");
+        reg.setPassword("pass123");
+        mockMvc.perform(post("/api/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reg)));
+
+        var login = new LoginRequest();
+        login.setEmail("anna@test.it");
+        login.setPassword("pass123");
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(login)));
+
+        var verify = new VerifyOtpRequest();
+        verify.setEmail("anna@test.it");
+        verify.setCode("12345");
+        mockMvc.perform(post("/api/auth/verify-otp")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(verify)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.user.email").value("anna@test.it"));
     }
 
     @Test

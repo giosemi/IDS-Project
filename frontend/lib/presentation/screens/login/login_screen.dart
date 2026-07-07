@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart' hide SwitchTheme;
-import 'package:artid/core/theme/widgets/switch_theme.dart';
+import 'package:artid/presentation/widgets/app_logo.dart';
 import 'package:artid/presentation/screens/login/widgets/login_card.dart';
+import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -8,15 +8,20 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          const SafeArea(
-            child: Center(
-              child: SingleChildScrollView(padding: EdgeInsets.all(24), child: LoginCard()),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const AppLogo(height: 80),
+                const SizedBox(height: 32),
+                const LoginCard(),
+              ],
             ),
           ),
-          Positioned(top: MediaQuery.of(context).padding.top + 8, right: 16, child: const SwitchTheme()),
-        ],
+        ),
       ),
     );
   }

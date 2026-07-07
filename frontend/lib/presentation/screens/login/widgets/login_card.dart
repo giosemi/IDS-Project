@@ -1,3 +1,4 @@
+import 'package:artid/presentation/screens/otp/otp_screen.dart';
 import 'package:artid/presentation/screens/register/register_screen.dart';
 import 'package:artid/presentation/widgets/app_snack_bar.dart';
 import 'package:artid/providers/auth/auth_provider.dart';
@@ -13,8 +14,8 @@ class LoginCard extends ConsumerStatefulWidget {
 
 class _LoginCardState extends ConsumerState<LoginCard> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController(text: 'test@test.com');
-  final TextEditingController _passwordController = TextEditingController(text: 'password');
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _rememberMe = false;
@@ -41,14 +42,20 @@ class _LoginCardState extends ConsumerState<LoginCard> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final success = await ref.read(authProvider.notifier).login(email: _emailController.text, password: _passwordController.text);
+    final email = _emailController.text.trim();
+    final response = await ref.read(authProvider.notifier).requestLoginOtp(
+          email: email,
+          password: _passwordController.text,
+        );
 
     if (!mounted) return;
 
-    if (success) {
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
+    if (response != null) {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => OtpScreen(email: email, devOtp: response.devOtp),
+        ),
+      );
     } else {
       final error = ref.read(authProvider).errorMessage;
       if (error != null) {
@@ -74,13 +81,6 @@ class _LoginCardState extends ConsumerState<LoginCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  height: 88,
-                  width: 88,
-                  decoration: BoxDecoration(color: colors.primaryContainer, shape: BoxShape.circle),
-                  child: Icon(Icons.palette_rounded, size: 42, color: colors.onPrimaryContainer),
-                ),
-                const SizedBox(height: 24),
                 Text(
                   'Bentornato',
                   style: text.headlineMedium?.copyWith(fontWeight: FontWeight.bold),

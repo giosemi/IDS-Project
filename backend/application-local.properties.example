@@ -1,0 +1,12 @@
+# Copia questo file come application-local.properties e compila i valori.
+# Gmail richiede una "App Password" (non la password normale):
+# Google Account → Sicurezza → Verifica in 2 passaggi → Password per le app
+
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=tuo-account@gmail.com
+MAIL_PASSWORD=xxxx-xxxx-xxxx-xxxx
+MAIL_FROM=tuo-account@gmail.com
+
+# Disabilita l'OTP in chiaro nella risposta API quando l'email è attiva
+OTP_EXPOSE_IN_RESPONSE=false

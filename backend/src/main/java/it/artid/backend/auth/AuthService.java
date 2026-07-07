@@ -4,6 +4,7 @@ import it.artid.backend.profile.ProfileRepository;
 import it.artid.backend.profile.StudentProfileEntity;
 import it.artid.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,13 @@ public class AuthService {
     private final ProfileRepository profileRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
+
+    @Value("${otp.expose-in-response:false}")
+    private boolean exposeOtpInResponse;
+
+    @Value("${spring.mail.username:}")
+    private String mailUsername;
 
     @Transactional
     public AuthResponse register(RegisterRequest req) {
@@ -47,17 +55,43 @@ public class AuthService {
         return buildResponse(user);
     }
 
-    public AuthResponse login(LoginRequest req) {
+    public OtpSentResponse initiateLogin(LoginRequest req) {
+        var user = authenticate(req.getEmail(), req.getPassword());
+        var code = otpService.sendLoginOtp(user);
+        return new OtpSentResponse(true, user.getEmail(), devOtpOrNull(code));
+    }
+
+    public AuthResponse verifyLoginOtp(VerifyOtpRequest req) {
+        var userId = otpService.consumeValidOtp(req.getEmail(), req.getCode());
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Codice OTP non valido o scaduto"));
+        return buildResponse(user);
+    }
+
+    public OtpSentResponse resendLoginOtp(ResendOtpRequest req) {
         var user = userRepository.findByEmailIgnoreCase(req.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato"));
+        var code = otpService.resendLoginOtp(req.getEmail(), user);
+        return new OtpSentResponse(true, user.getEmail(), devOtpOrNull(code));
+    }
+
+    private UserEntity authenticate(String email, String password) {
+        var user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide"));
-        if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide");
         }
-        return buildResponse(user);
+        return user;
     }
 
     private AuthResponse buildResponse(UserEntity user) {
         String token = jwtService.generateToken(user.getId());
         return new AuthResponse(token, new AuthResponse.UserDto(user.getId(), user.getName(), user.getEmail()));
+    }
+
+    private String devOtpOrNull(String code) {
+        if (!exposeOtpInResponse) return null;
+        if (mailUsername != null && !mailUsername.isBlank()) return null;
+        return code;
     }
 }
