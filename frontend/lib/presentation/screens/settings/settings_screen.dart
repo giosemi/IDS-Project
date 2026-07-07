@@ -208,13 +208,12 @@ class _SettingsGroup extends StatelessWidget {
 }
 
 class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({required this.icon, required this.iconColor, required this.title, required this.subtitle, this.trailing, this.showChevron = false, this.onTap});
+  const _SettingsTile({required this.icon, required this.iconColor, required this.title, required this.subtitle, this.showChevron = false, this.onTap});
 
   final IconData icon;
   final Color iconColor;
   final String title;
   final String subtitle;
-  final Widget? trailing;
   final bool showChevron;
   final VoidCallback? onTap;
 
@@ -248,7 +247,7 @@ class _SettingsTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (trailing != null) trailing! else if (showChevron) Icon(Icons.chevron_right_rounded, color: colors.onSurfaceVariant),
+              if (showChevron) Icon(Icons.chevron_right_rounded, color: colors.onSurfaceVariant),
             ],
           ),
         ),

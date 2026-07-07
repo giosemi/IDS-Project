@@ -35,9 +35,10 @@ public class AuthService {
         if (userRepository.existsByEmailIgnoreCase(req.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già registrata");
         }
+        var fullName = "%s %s".formatted(req.getFirstName().trim(), req.getLastName().trim());
         var user = UserEntity.builder()
                 .id(UUID.randomUUID().toString())
-                .name(req.getName().trim())
+                .name(fullName)
                 .email(req.getEmail().toLowerCase())
                 .passwordHash(passwordEncoder.encode(req.getPassword()))
                 .build();
@@ -45,9 +46,9 @@ public class AuthService {
 
         var profile = StudentProfileEntity.builder()
                 .userId(user.getId())
-                .fullName(user.getName())
+                .fullName(fullName)
                 .email(user.getEmail())
-                .institution("").course("").studyYear(1).bio("")
+                .institution(req.getInstitution().trim()).course("").studyYear(1).bio("")
                 .skills(new ArrayList<>())
                 .build();
         profileRepository.save(profile);
@@ -73,6 +74,26 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato"));
         var code = otpService.resendLoginOtp(req.getEmail(), user);
         return new OtpSentResponse(true, user.getEmail(), devOtpOrNull(code));
+    }
+
+    public OtpSentResponse forgotPassword(ForgotPasswordRequest req) {
+        var email = req.getEmail().toLowerCase();
+        var userOpt = userRepository.findByEmailIgnoreCase(email);
+        if (userOpt.isPresent()) {
+            var code = otpService.sendPasswordResetOtp(userOpt.get());
+            return new OtpSentResponse(true, email, devOtpOrNull(code));
+        }
+        return new OtpSentResponse(true, email, null);
+    }
+
+    @Transactional
+    public MessageResponse resetPassword(ResetPasswordRequest req) {
+        var userId = otpService.consumePasswordResetOtp(req.getEmail(), req.getCode());
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Codice non valido o scaduto"));
+        user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
+        userRepository.save(user);
+        return new MessageResponse("Password aggiornata con successo");
     }
 
     private UserEntity authenticate(String email, String password) {

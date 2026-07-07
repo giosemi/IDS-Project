@@ -1,0 +1,9 @@
+Ciao {{fullName}},
+
+Il tuo codice di accesso ArtID è: {{code}}
+
+Il codice scade tra 5 minuti.
+
+Se non hai richiesto tu l'accesso, ignora questa email.
+
+— ArtID

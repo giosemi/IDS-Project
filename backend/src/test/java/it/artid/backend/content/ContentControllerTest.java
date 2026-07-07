@@ -35,9 +35,11 @@ class ContentControllerTest {
                 .build();
 
         var reg = new RegisterRequest();
-        reg.setName("Test");
+        reg.setFirstName("Test");
+        reg.setLastName("User");
         reg.setEmail("content@test.it");
         reg.setPassword("pass123");
+        reg.setInstitution("Accademia di Brera");
         var result = mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(reg)))

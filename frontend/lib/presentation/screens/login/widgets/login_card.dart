@@ -1,3 +1,4 @@
+import 'package:artid/presentation/screens/forgot_password/forgot_password_screen.dart';
 import 'package:artid/presentation/screens/otp/otp_screen.dart';
 import 'package:artid/presentation/screens/register/register_screen.dart';
 import 'package:artid/presentation/widgets/app_snack_bar.dart';
@@ -141,7 +142,14 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                         ],
                       ),
                     ),
-                    TextButton(onPressed: () {}, child: const Text('Password dimenticata?')),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(builder: (_) => const ForgotPasswordScreen()),
+                        );
+                      },
+                      child: const Text('Password dimenticata?'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),

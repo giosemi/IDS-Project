@@ -4,9 +4,8 @@
 
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
-MAIL_USERNAME=tuo-account@gmail.com
-MAIL_PASSWORD=xxxx-xxxx-xxxx-xxxx
-MAIL_FROM=tuo-account@gmail.com
-
-# Disabilita l'OTP in chiaro nella risposta API quando l'email è attiva
+MAIL_USERNAME=tua-email@gmail.com
+MAIL_PASSWORD=xxxx xxxx xxxx xxxx
+MAIL_FROM=tua-email@gmail.com
+# false quando l'email è configurata (l'OTP non va esposto nell'API)
 OTP_EXPOSE_IN_RESPONSE=false

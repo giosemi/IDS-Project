@@ -2,13 +2,12 @@ package it.artid.backend.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class RegisterRequest {
-    @NotBlank private String firstName;
-    @NotBlank private String lastName;
+public class ResetPasswordRequest {
     @Email @NotBlank private String email;
-    @NotBlank private String password;
-    @NotBlank private String institution;
+    @NotBlank private String code;
+    @NotBlank @Size(min = 6) private String newPassword;
 }

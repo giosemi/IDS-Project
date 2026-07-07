@@ -1,5 +1,6 @@
 package it.artid.backend.auth;
 
+import it.artid.backend.mail.AuthMailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,10 @@ public class OtpService {
 
     private static final int OTP_TTL_SECONDS = 300;
 
-    private final OtpMailService mailService;
+    private final AuthMailService mailService;
     private final SecureRandom random = new SecureRandom();
     private final Map<String, OtpEntry> pendingByEmail = new ConcurrentHashMap<>();
+    private final Map<String, OtpEntry> passwordResetByEmail = new ConcurrentHashMap<>();
 
     @Value("${otp.fixed-code:}")
     private String fixedCode;
@@ -28,7 +30,7 @@ public class OtpService {
         var email = user.getEmail().toLowerCase();
         var code = generateCode();
         pendingByEmail.put(email, new OtpEntry(user.getId(), code, Instant.now().plusSeconds(OTP_TTL_SECONDS)));
-        mailService.sendLoginOtp(email, code);
+        mailService.sendLoginOtp(email, user.getName(), code);
         return code;
     }
 
@@ -53,6 +55,30 @@ public class OtpService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email non valida");
         }
         return sendLoginOtp(user);
+    }
+
+    public String sendPasswordResetOtp(UserEntity user) {
+        var email = user.getEmail().toLowerCase();
+        var code = generateCode();
+        passwordResetByEmail.put(email, new OtpEntry(user.getId(), code, Instant.now().plusSeconds(OTP_TTL_SECONDS)));
+        mailService.sendPasswordResetOtp(email, code);
+        return code;
+    }
+
+    public String consumePasswordResetOtp(String email, String code) {
+        var entry = passwordResetByEmail.get(email.toLowerCase());
+        if (entry == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Codice non valido o scaduto");
+        }
+        if (Instant.now().isAfter(entry.expiresAt())) {
+            passwordResetByEmail.remove(email.toLowerCase());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Codice non valido o scaduto");
+        }
+        if (!entry.code().equals(code.trim())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Codice non valido o scaduto");
+        }
+        passwordResetByEmail.remove(email.toLowerCase());
+        return entry.userId();
     }
 
     private String generateCode() {

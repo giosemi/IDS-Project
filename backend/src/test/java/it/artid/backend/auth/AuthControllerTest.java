@@ -37,9 +37,11 @@ class AuthControllerTest {
     @Test
     void register_shouldReturn201WithToken() throws Exception {
         var req = new RegisterRequest();
-        req.setName("Mario Rossi");
+        req.setFirstName("Mario");
+        req.setLastName("Rossi");
         req.setEmail("mario@test.it");
         req.setPassword("password123");
+        req.setInstitution("Accademia di Belle Arti di Roma");
 
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -53,9 +55,11 @@ class AuthControllerTest {
     @Test
     void register_duplicateEmail_shouldReturn409() throws Exception {
         var req = new RegisterRequest();
-        req.setName("Mario");
+        req.setFirstName("Mario");
+        req.setLastName("Dup");
         req.setEmail("dup@test.it");
         req.setPassword("pass123");
+        req.setInstitution("Accademia di Brera");
 
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -70,9 +74,11 @@ class AuthControllerTest {
     @Test
     void login_validCredentials_shouldSendOtp() throws Exception {
         var reg = new RegisterRequest();
-        reg.setName("Luigi");
+        reg.setFirstName("Luigi");
+        reg.setLastName("Verdi");
         reg.setEmail("luigi@test.it");
         reg.setPassword("pass123");
+        reg.setInstitution("Accademia di Brera");
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(reg)));
@@ -91,9 +97,11 @@ class AuthControllerTest {
     @Test
     void verifyOtp_validCode_shouldReturnToken() throws Exception {
         var reg = new RegisterRequest();
-        reg.setName("Anna");
+        reg.setFirstName("Anna");
+        reg.setLastName("Bianchi");
         reg.setEmail("anna@test.it");
         reg.setPassword("pass123");
+        reg.setInstitution("Accademia di Brera");
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(reg)));
@@ -134,5 +142,63 @@ class AuthControllerTest {
                 .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.fields").exists());
+    }
+
+    @Test
+    void forgotPassword_existingEmail_shouldSendOtp() throws Exception {
+        var reg = new RegisterRequest();
+        reg.setFirstName("Reset");
+        reg.setLastName("User");
+        reg.setEmail("reset@test.it");
+        reg.setPassword("oldpass123");
+        reg.setInstitution("Accademia di Brera");
+        mockMvc.perform(post("/api/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reg)));
+
+        var forgot = new ForgotPasswordRequest();
+        forgot.setEmail("reset@test.it");
+        mockMvc.perform(post("/api/auth/forgot-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(forgot)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("reset@test.it"));
+    }
+
+    @Test
+    void resetPassword_validCode_shouldUpdatePassword() throws Exception {
+        var reg = new RegisterRequest();
+        reg.setFirstName("New");
+        reg.setLastName("Pass");
+        reg.setEmail("newpass@test.it");
+        reg.setPassword("oldpass123");
+        reg.setInstitution("Accademia di Brera");
+        mockMvc.perform(post("/api/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reg)));
+
+        var forgot = new ForgotPasswordRequest();
+        forgot.setEmail("newpass@test.it");
+        mockMvc.perform(post("/api/auth/forgot-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(forgot)));
+
+        var reset = new ResetPasswordRequest();
+        reset.setEmail("newpass@test.it");
+        reset.setCode("12345");
+        reset.setNewPassword("newpass456");
+        mockMvc.perform(post("/api/auth/reset-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reset)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Password aggiornata con successo"));
+
+        var login = new LoginRequest();
+        login.setEmail("newpass@test.it");
+        login.setPassword("newpass456");
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isOk());
     }
 }

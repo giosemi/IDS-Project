@@ -84,10 +84,45 @@ class AuthApiService {
     return OtpSentResponse.fromJson(_parseJsonMap(res.data));
   }
 
-  Future<AuthResponse> register(String name, String email, String password) async {
+  Future<OtpSentResponse> requestPasswordReset(String email) async {
+    final res = await _dio.post<dynamic>(
+      '/api/auth/forgot-password',
+      data: {'email': email},
+    );
+    return OtpSentResponse.fromJson(_parseJsonMap(res.data));
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    await _dio.post<dynamic>(
+      '/api/auth/reset-password',
+      data: {
+        'email': email,
+        'code': code,
+        'newPassword': newPassword,
+      },
+    );
+  }
+
+  Future<AuthResponse> register({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String institution,
+  }) async {
     final res = await _dio.post<dynamic>(
       '/api/auth/register',
-      data: {'name': name, 'email': email, 'password': password},
+      data: {
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'password': password,
+        'institution': institution,
+      },
     );
     return AuthResponse.fromJson(_parseJsonMap(res.data));
   }
