@@ -1,4 +1,5 @@
 import 'package:artid/presentation/screens/reset_password/widgets/reset_password_card.dart';
+import 'package:artid/presentation/widgets/app_logo.dart';
 import 'package:flutter/material.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
@@ -14,12 +15,18 @@ class ResetPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nuova password')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: ResetPasswordCard(email: email, devOtp: devOtp),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const AppLogo(height: 72),
+                const SizedBox(height: 28),
+                ResetPasswordCard(email: email, devOtp: devOtp),
+              ],
+            ),
           ),
         ),
       ),

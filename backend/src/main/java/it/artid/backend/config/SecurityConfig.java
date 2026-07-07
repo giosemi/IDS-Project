@@ -29,7 +29,14 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/ping", "/api/auth/**", "/api/s/**", "/api/search", "/api/institutions/**").permitAll()
+                        .requestMatchers(
+                                "/api/ping",
+                                "/api/auth/**",
+                                "/api/s/*",
+                                "/api/s/*/content/*/media",
+                                "/api/search",
+                                "/api/institutions/**")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) ->

@@ -6,7 +6,6 @@ final mockDemoShareLink = ShareLink(
   token: 'afam-demo',
   ownerId: 'user-1',
   label: 'Portfolio audizione',
-  createdAt: DateTime(2025, 1, 1),
   contentIds: const ['1', '4', '6'],
   includeProfile: true,
 );

@@ -11,7 +11,5 @@ StudentProfile mockProfileForUser(String userId, {String? name, String? email}) 
     bio:
         'Violinista in formazione con esperienza in ensemble cameristici e orchestra sinfonica. '
         'Interessata alla musica contemporanea e alla didattica.',
-    skills: const ['Violino', 'Musica da camera', 'Improvvisazione', 'Solfeggio'],
-    cvSummary: 'Biennio superiori · 3 concorsi nazionali · 2 masterclass internazionali',
   );
 }

@@ -1,4 +1,5 @@
 import 'package:artid/presentation/screens/forgot_password/widgets/forgot_password_card.dart';
+import 'package:artid/presentation/widgets/app_logo.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
@@ -7,12 +8,18 @@ class ForgotPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recupero password')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: const ForgotPasswordCard(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const AppLogo(height: 72),
+                const SizedBox(height: 28),
+                const ForgotPasswordCard(),
+              ],
+            ),
           ),
         ),
       ),

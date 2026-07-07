@@ -1,6 +1,4 @@
 import 'package:artid/core/costants/app_spacing.dart';
-import 'package:artid/presentation/screens/login/login_screen.dart';
-import 'package:artid/presentation/screens/register/register_screen.dart';
 import 'package:artid/providers/auth/auth_provider.dart';
 import 'package:artid/providers/navigation/main_nav_provider.dart';
 import 'package:flutter/material.dart';
@@ -23,43 +21,20 @@ class SettingsScreen extends ConsumerWidget {
         const SizedBox(height: AppSpacing.lg),
         const _SectionLabel('Account'),
         const SizedBox(height: AppSpacing.sm),
-        if (isAuthenticated)
+        if (isAuthenticated || isGuest)
           _SettingsGroup(
             children: [
               _SettingsTile(
                 icon: Icons.logout_rounded,
                 iconColor: Theme.of(context).colorScheme.error,
                 title: 'Esci',
-                subtitle: 'Disconnetti il tuo account',
+                subtitle: isGuest ? 'Torna alla schermata di login' : 'Disconnetti il tuo account',
                 showChevron: true,
                 onTap: () {
                   ref.read(authProvider.notifier).logout();
-                  ref.read(mainNavProvider.notifier).setIndex(0);
-                },
-              ),
-            ],
-          )
-        else
-          _SettingsGroup(
-            children: [
-              _SettingsTile(
-                icon: Icons.login_rounded,
-                iconColor: const Color(0xFF6C63FF),
-                title: 'Accedi',
-                subtitle: 'Entra nel tuo account ArtID',
-                showChevron: true,
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LoginScreen()));
-                },
-              ),
-              _SettingsTile(
-                icon: Icons.person_add_rounded,
-                iconColor: const Color(0xFF43C6AC),
-                title: 'Registrati',
-                subtitle: 'Crea un nuovo account',
-                showChevron: true,
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const RegisterScreen()));
+                  if (isAuthenticated) {
+                    ref.read(mainNavProvider.notifier).setIndex(0);
+                  }
                 },
               ),
             ],

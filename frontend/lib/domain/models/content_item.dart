@@ -8,10 +8,7 @@ class ContentItem {
     required this.year,
     required this.ownerId,
     required this.type,
-    this.technique,
-    this.dimensions,
     this.duration,
-    this.subtitle,
     this.fileName,
     this.filePath,
     this.hasMedia = false,
@@ -23,10 +20,7 @@ class ContentItem {
   final int year;
   final String ownerId;
   final ContentType type;
-  final String? technique;
-  final String? dimensions;
   final String? duration;
-  final String? subtitle;
   final String? fileName;
   final String? filePath;
   final bool hasMedia;
@@ -39,10 +33,7 @@ class ContentItem {
       year: json['year'] as int? ?? 0,
       ownerId: json['ownerId'] as String,
       type: ContentType.fromJson(json['type'] as String),
-      technique: json['technique'] as String?,
-      dimensions: json['dimensions'] as String?,
       duration: json['duration'] as String?,
-      subtitle: json['subtitle'] as String?,
       fileName: json['fileName'] as String?,
       hasMedia: json['hasMedia'] as bool? ?? false,
     );
@@ -53,10 +44,7 @@ class ContentItem {
         'description': description,
         'year': year,
         'type': type.toJson(),
-        if (technique != null) 'technique': technique,
-        if (dimensions != null) 'dimensions': dimensions,
         if (duration != null) 'duration': duration,
-        if (subtitle != null) 'subtitle': subtitle,
         if (fileName != null) 'fileName': fileName,
       };
 
@@ -65,10 +53,7 @@ class ContentItem {
     String? description,
     int? year,
     ContentType? type,
-    String? technique,
-    String? dimensions,
     String? duration,
-    String? subtitle,
     String? fileName,
     String? filePath,
     bool? hasMedia,
@@ -80,10 +65,7 @@ class ContentItem {
       year: year ?? this.year,
       ownerId: ownerId,
       type: type ?? this.type,
-      technique: technique ?? this.technique,
-      dimensions: dimensions ?? this.dimensions,
       duration: duration ?? this.duration,
-      subtitle: subtitle ?? this.subtitle,
       fileName: fileName ?? this.fileName,
       filePath: filePath ?? this.filePath,
       hasMedia: hasMedia ?? this.hasMedia,

@@ -29,13 +29,19 @@ public class ShareLinksService {
     }
 
     public ShareLinkEntity create(String ownerId, CreateShareLinkRequest req) {
+        var contentIds = req.getContentIds() != null ? req.getContentIds() : List.<String>of();
+        if (contentIds.isEmpty() && !req.isIncludeProfile()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Seleziona almeno un contenuto o includi il profilo");
+        }
+
         var link = ShareLinkEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .token("afam-" + Long.toString(System.currentTimeMillis(), 36))
                 .ownerId(ownerId).label(req.getLabel())
-                .createdAt(Instant.now())
-                .contentIds(req.getContentIds())
+                .contentIds(contentIds)
                 .includeProfile(req.isIncludeProfile())
+                .allowDownload(req.isAllowDownload())
                 .expiresAt(req.getExpiresAt())
                 .viewCount(0)
                 .build();
@@ -65,10 +71,15 @@ public class ShareLinksService {
 
         List<ContentItemEntity> items = contentService.findByIds(link.getContentIds());
         StudentProfileEntity profile = link.isIncludeProfile() ? profileService.get(link.getOwnerId()) : null;
-        return new SharedView(link.getLabel(), link.getToken(), profile, items);
+        return new SharedView(link.getLabel(), link.getToken(), profile, items, link.isAllowDownload());
     }
 
-    public record SharedView(String label, String token, StudentProfileEntity profile, List<ContentItemEntity> items) {}
+    public record SharedView(
+            String label,
+            String token,
+            StudentProfileEntity profile,
+            List<ContentItemEntity> items,
+            boolean allowDownload) {}
 
     public ResponseEntity<Resource> loadSharedMedia(String token, String contentId) {
         var link = shareLinkRepository.findByToken(token)
@@ -79,6 +90,13 @@ public class ShareLinksService {
         if (!link.getContentIds().contains(contentId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contenuto non condiviso");
         }
-        return contentService.loadMedia(contentId);
+        var item = contentService.findById(contentId);
+        var response = contentService.loadMedia(contentId);
+        if (link.isAllowDownload() && item.getFileName() != null && !item.getFileName().isBlank()) {
+            var headers = response.getHeaders();
+            headers.set(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + item.getFileName() + "\"");
+        }
+        return response;
     }
 }

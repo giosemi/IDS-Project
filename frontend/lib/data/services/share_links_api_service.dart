@@ -11,12 +11,14 @@ class SharedViewData {
     required this.token,
     required this.items,
     this.profile,
+    this.allowDownload = false,
   });
 
   final String label;
   final String token;
   final List<ContentItem> items;
   final StudentProfile? profile;
+  final bool allowDownload;
 }
 
 class ShareLinksApiService {
@@ -36,12 +38,14 @@ class ShareLinksApiService {
     required String label,
     required List<String> contentIds,
     bool includeProfile = true,
+    bool allowDownload = false,
     DateTime? expiresAt,
   }) async {
     final data = <String, dynamic>{
       'label': label,
       'contentIds': contentIds,
       'includeProfile': includeProfile,
+      'allowDownload': allowDownload,
     };
     if (expiresAt != null) {
       data['expiresAt'] = expiresAt.toUtc().toIso8601String();
@@ -70,6 +74,7 @@ class ShareLinksApiService {
       token: json['token'] as String,
       items: items,
       profile: profile,
+      allowDownload: json['allowDownload'] as bool? ?? false,
     );
   }
 }

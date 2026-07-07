@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -49,7 +48,6 @@ public class AuthService {
                 .fullName(fullName)
                 .email(user.getEmail())
                 .institution(req.getInstitution().trim()).course("").studyYear(1).bio("")
-                .skills(new ArrayList<>())
                 .build();
         profileRepository.save(profile);
 

@@ -4,9 +4,9 @@ class ShareLink {
     required this.token,
     required this.ownerId,
     required this.label,
-    required this.createdAt,
     required this.contentIds,
     this.includeProfile = true,
+    this.allowDownload = false,
     this.expiresAt,
     this.viewCount = 0,
     this.lastViewedAt,
@@ -16,9 +16,9 @@ class ShareLink {
   final String token;
   final String ownerId;
   final String label;
-  final DateTime createdAt;
   final List<String> contentIds;
   final bool includeProfile;
+  final bool allowDownload;
   final DateTime? expiresAt;
   final int viewCount;
   final DateTime? lastViewedAt;
@@ -33,9 +33,9 @@ class ShareLink {
       token: json['token'] as String,
       ownerId: json['ownerId'] as String,
       label: json['label'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
       contentIds: (json['contentIds'] as List<dynamic>?)?.cast<String>() ?? const [],
       includeProfile: json['includeProfile'] as bool? ?? true,
+      allowDownload: json['allowDownload'] as bool? ?? false,
       expiresAt: json['expiresAt'] != null
           ? DateTime.parse(json['expiresAt'] as String)
           : null,
@@ -50,6 +50,7 @@ class ShareLink {
     String? label,
     List<String>? contentIds,
     bool? includeProfile,
+    bool? allowDownload,
     DateTime? expiresAt,
     int? viewCount,
     DateTime? lastViewedAt,
@@ -59,9 +60,9 @@ class ShareLink {
       token: token,
       ownerId: ownerId,
       label: label ?? this.label,
-      createdAt: createdAt,
       contentIds: contentIds ?? this.contentIds,
       includeProfile: includeProfile ?? this.includeProfile,
+      allowDownload: allowDownload ?? this.allowDownload,
       expiresAt: expiresAt ?? this.expiresAt,
       viewCount: viewCount ?? this.viewCount,
       lastViewedAt: lastViewedAt ?? this.lastViewedAt,

@@ -7,8 +7,6 @@ class StudentProfile {
     required this.course,
     required this.studyYear,
     required this.bio,
-    this.skills = const [],
-    this.cvSummary,
   });
 
   final String userId;
@@ -18,8 +16,6 @@ class StudentProfile {
   final String course;
   final int studyYear;
   final String bio;
-  final List<String> skills;
-  final String? cvSummary;
 
   factory StudentProfile.fromJson(Map<String, dynamic> json) {
     return StudentProfile(
@@ -30,8 +26,6 @@ class StudentProfile {
       course: json['course'] as String? ?? '',
       studyYear: json['studyYear'] as int? ?? 1,
       bio: json['bio'] as String? ?? '',
-      skills: (json['skills'] as List<dynamic>?)?.cast<String>() ?? const [],
-      cvSummary: json['cvSummary'] as String?,
     );
   }
 
@@ -41,8 +35,6 @@ class StudentProfile {
         'course': course,
         'studyYear': studyYear,
         'bio': bio,
-        'skills': skills,
-        if (cvSummary != null) 'cvSummary': cvSummary,
       };
 
   StudentProfile copyWith({
@@ -52,8 +44,6 @@ class StudentProfile {
     String? course,
     int? studyYear,
     String? bio,
-    List<String>? skills,
-    String? cvSummary,
   }) {
     return StudentProfile(
       userId: userId,
@@ -63,8 +53,6 @@ class StudentProfile {
       course: course ?? this.course,
       studyYear: studyYear ?? this.studyYear,
       bio: bio ?? this.bio,
-      skills: skills ?? this.skills,
-      cvSummary: cvSummary ?? this.cvSummary,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:artid/core/costants/app_spacing.dart';
+import 'package:artid/data/services/shared_content_download_service.dart';
 import 'package:artid/domain/models/content_item.dart';
 import 'package:artid/presentation/layout/layout.dart';
 import 'package:artid/presentation/screens/portfolio/add_content_screen.dart';
@@ -9,11 +10,14 @@ import 'package:artid/providers/portfolio/user_contents_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ContentDetailScreen extends ConsumerWidget {
+const _sharedContentDownloadService = SharedContentDownloadService();
+
+class ContentDetailScreen extends ConsumerStatefulWidget {
   ContentDetailScreen({
     super.key,
     this.content,
     this.shareToken,
+    this.allowDownload = false,
     String? contentId,
   }) : contentId = contentId ?? content?.id {
     assert(content != null || contentId != null, 'Serve content o contentId');
@@ -21,14 +25,51 @@ class ContentDetailScreen extends ConsumerWidget {
 
   final ContentItem? content;
   final String? shareToken;
+  final bool allowDownload;
   final String? contentId;
+
+  @override
+  ConsumerState<ContentDetailScreen> createState() => _ContentDetailScreenState();
+}
+
+class _ContentDetailScreenState extends ConsumerState<ContentDetailScreen> {
+  var _isDownloading = false;
+
+  bool _canDownload(ContentItem item) =>
+      widget.shareToken != null &&
+      widget.allowDownload &&
+      item.fileName != null &&
+      item.fileName!.isNotEmpty &&
+      item.hasMedia;
+
+  Future<void> _download(ContentItem item) async {
+    if (_isDownloading || widget.shareToken == null) return;
+    setState(() => _isDownloading = true);
+
+    try {
+      final path = await _sharedContentDownloadService.download(
+        shareToken: widget.shareToken!,
+        item: item,
+      );
+      if (!mounted) return;
+      AppSnackBar.success(context, 'Scaricato: ${item.fileName}\n$path');
+    } on SharedContentDownloadException catch (e) {
+      if (!mounted) return;
+      AppSnackBar.error(context, e.message);
+    } catch (_) {
+      if (!mounted) return;
+      AppSnackBar.error(context, 'Impossibile scaricare il file');
+    } finally {
+      if (mounted) setState(() => _isDownloading = false);
+    }
+  }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Elimina opera'),
-        content: const Text('Sei sicuro di voler eliminare questa opera dal portfolio?'),
+        content: const Text('Sei sicuro di voler eliminare questa opera dal tuo portfolio? Questa operazione è irreversibile.'),
         actions: [
           TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Annulla')),
           FilledButton(
@@ -42,16 +83,16 @@ class ContentDetailScreen extends ConsumerWidget {
 
     if (confirmed != true || !context.mounted) return;
 
-    await ref.read(userContentsProvider.notifier).remove(contentId!);
+    await ref.read(userContentsProvider.notifier).remove(widget.contentId!);
     if (!context.mounted) return;
     Navigator.of(context).pop();
     AppSnackBar.success(context, 'Opera eliminata');
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final item = content ?? (contentId != null ? ref.watch(contentByIdProvider(contentId!)) : null);
-    final canManage = contentId != null ? ref.watch(canManageContentProvider(contentId!)) : false;
+  Widget build(BuildContext context) {
+    final item = widget.content ?? (widget.contentId != null ? ref.watch(contentByIdProvider(widget.contentId!)) : null);
+    final canManage = widget.contentId != null ? ref.watch(canManageContentProvider(widget.contentId!)) : false;
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
@@ -65,17 +106,16 @@ class ContentDetailScreen extends ConsumerWidget {
 
     return AppLayout(
       title: item.title,
-      subtitle: item.subtitle ?? item.type.label,
+      subtitle: item.type.label,
       showBackButton: true,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ContentMediaViewer(item: item, shareToken: shareToken),
+            ContentMediaViewer(item: item, shareToken: widget.shareToken),
             const SizedBox(height: AppSpacing.md),
             Text(item.title, style: text.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-            if (item.subtitle != null) ...[const SizedBox(height: AppSpacing.sm), Text(item.subtitle!, style: text.titleMedium?.copyWith(color: colors.primary))],
             const SizedBox(height: AppSpacing.lg),
             _DetailRow(label: 'Anno', value: item.year.toString()),
             if (item.duration != null) _DetailRow(label: 'Durata', value: item.duration!),
@@ -83,6 +123,20 @@ class ContentDetailScreen extends ConsumerWidget {
             Text('Descrizione', style: text.titleSmall),
             const SizedBox(height: AppSpacing.sm),
             Text(item.description, style: text.bodyLarge?.copyWith(color: colors.onSurfaceVariant, height: 1.5)),
+            if (_canDownload(item)) ...[
+              const SizedBox(height: AppSpacing.xl),
+              OutlinedButton.icon(
+                onPressed: _isDownloading ? null : () => _download(item),
+                icon: _isDownloading
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: colors.primary),
+                      )
+                    : const Icon(Icons.download_rounded),
+                label: const Text('Scarica'),
+              ),
+            ],
             if (canManage) ...[
               const SizedBox(height: AppSpacing.xl),
               Row(

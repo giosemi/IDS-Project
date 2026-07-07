@@ -35,9 +35,7 @@ class ShareLinksScreen extends ConsumerWidget {
             bottom: AppSpacing.md,
             child: FloatingActionButton.extended(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const CreateShareLinkScreen()),
-                );
+                Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CreateShareLinkScreen()));
               },
               icon: const Icon(Icons.add_link_rounded),
               label: const Text('Nuovo link'),
@@ -67,9 +65,7 @@ class _EmptyLinks extends StatelessWidget {
             Text(
               'Crea un link per condividere contenuti selezionati con commissioni o docenti esterni.',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ],
         ),
@@ -97,24 +93,20 @@ class _ShareLinkCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Expanded(child: Text(link.label, style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600))),
+                Expanded(
+                  child: Text(link.label, style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                ),
                 if (link.isExpired)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: colors.errorContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    decoration: BoxDecoration(color: colors.errorContainer, borderRadius: BorderRadius.circular(12)),
                     child: Text('Scaduto', style: text.labelSmall?.copyWith(color: colors.onErrorContainer)),
                   ),
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
             Text('${link.contentIds.length} contenuti · ${link.viewCount} visualizzazioni', style: text.bodySmall?.copyWith(color: colors.onSurfaceVariant)),
-            if (link.lastViewedAt != null) ...[
-              const SizedBox(height: 4),
-              Text('Ultima apertura: ${_formatDate(link.lastViewedAt!)}', style: text.bodySmall?.copyWith(color: colors.onSurfaceVariant)),
-            ],
+            if (link.lastViewedAt != null) ...[const SizedBox(height: 4), Text('Ultima apertura: ${_formatDate(link.lastViewedAt!)}', style: text.bodySmall?.copyWith(color: colors.onSurfaceVariant))],
             const SizedBox(height: AppSpacing.md),
             Row(
               children: [
@@ -128,19 +120,17 @@ class _ShareLinkCard extends ConsumerWidget {
                 ),
                 TextButton.icon(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => SharedProfileScreen(token: link.token),
-                      ),
-                    );
+                    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => SharedProfileScreen(token: link.token)));
                   },
                   icon: const Icon(Icons.visibility_outlined, size: 18),
                   label: const Text('Anteprima'),
                 ),
                 const Spacer(),
-                IconButton(
-                  icon: Icon(Icons.delete_outline_rounded, color: colors.error),
+                TextButton.icon(
+                  style: TextButton.styleFrom(foregroundColor: colors.error),
                   onPressed: () => ref.read(shareLinksProvider.notifier).remove(link.id),
+                  icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                  label: const Text('Elimina'),
                 ),
               ],
             ),

@@ -13,10 +13,7 @@ public class ContentItemEntity {
     @Column(name = "release_year") private int year;
     @Column(nullable = false) private String ownerId;
     @Enumerated(EnumType.STRING) @Column(nullable = false) private ContentType type;
-    private String technique;
-    private String dimensions;
     private String duration;
-    private String subtitle;
     private String fileName;
 
     @Transient

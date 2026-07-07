@@ -13,12 +13,14 @@ public class ShareLinkEntity {
     @Column(unique = true, nullable = false) private String token;
     @Column(nullable = false) private String ownerId;
     @Column(nullable = false) private String label;
-    @Column(nullable = false) private Instant createdAt;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "share_link_content_ids", joinColumns = @JoinColumn(name = "link_id"))
     @Column(name = "content_id")
     @Builder.Default private List<String> contentIds = new ArrayList<>();
     private boolean includeProfile;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean allowDownload = false;
     private Instant expiresAt;
     private int viewCount;
     private Instant lastViewedAt;

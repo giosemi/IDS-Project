@@ -43,10 +43,7 @@ public class ContentService {
                 .year(req.getYear())
                 .ownerId(ownerId)
                 .type(req.getType())
-                .technique(req.getTechnique())
-                .dimensions(req.getDimensions())
                 .duration(req.getDuration())
-                .subtitle(req.getSubtitle())
                 .fileName(req.getFileName())
                 .build();
         var saved = contentRepository.save(item);
@@ -64,10 +61,7 @@ public class ContentService {
         if (req.getDescription() != null) item.setDescription(req.getDescription());
         if (req.getYear()        != null) item.setYear(req.getYear());
         if (req.getType()        != null) item.setType(req.getType());
-        if (req.getTechnique()   != null) item.setTechnique(req.getTechnique());
-        if (req.getDimensions()  != null) item.setDimensions(req.getDimensions());
         if (req.getDuration()    != null) item.setDuration(req.getDuration());
-        if (req.getSubtitle()    != null) item.setSubtitle(req.getSubtitle());
         if (req.getFileName()    != null) item.setFileName(req.getFileName());
         var saved = contentRepository.save(item);
         if (file != null && !file.isEmpty()) {

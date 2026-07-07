@@ -10,9 +10,6 @@ public class ContentRequest {
     @NotBlank private String description;
     @NotNull  private Integer year;
     @NotNull  private ContentType type;
-    private String technique;
-    private String dimensions;
     private String duration;
-    private String subtitle;
     private String fileName;
 }

@@ -26,10 +26,7 @@ class AddContentScreen extends ConsumerStatefulWidget {
 class _AddContentScreenState extends ConsumerState<AddContentScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleController;
-  late final TextEditingController _subtitleController;
   late final TextEditingController _yearController;
-  late final TextEditingController _techniqueController;
-  late final TextEditingController _dimensionsController;
   late final TextEditingController _durationController;
   late final TextEditingController _descriptionController;
 
@@ -45,10 +42,7 @@ class _AddContentScreenState extends ConsumerState<AddContentScreen> {
     super.initState();
     final content = widget.content;
     _titleController = TextEditingController(text: content?.title ?? '');
-    _subtitleController = TextEditingController(text: content?.subtitle ?? '');
     _yearController = TextEditingController(text: content?.year.toString() ?? '');
-    _techniqueController = TextEditingController(text: content?.technique ?? '');
-    _dimensionsController = TextEditingController(text: content?.dimensions ?? '');
     _durationController = TextEditingController(text: content?.duration ?? '');
     _descriptionController = TextEditingController(text: content?.description ?? '');
     _type = content?.type;
@@ -60,10 +54,7 @@ class _AddContentScreenState extends ConsumerState<AddContentScreen> {
   @override
   void dispose() {
     _titleController.dispose();
-    _subtitleController.dispose();
     _yearController.dispose();
-    _techniqueController.dispose();
-    _dimensionsController.dispose();
     _durationController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -173,7 +164,17 @@ class _AddContentScreenState extends ConsumerState<AddContentScreen> {
 
     setState(() => _isSaving = true);
 
-    final item = ContentItem(id: widget.content?.id ?? 'local-${DateTime.now().millisecondsSinceEpoch}', title: _titleController.text.trim(), subtitle: _subtitleController.text.trim().isEmpty ? null : _subtitleController.text.trim(), year: int.parse(_yearController.text.trim()), description: _descriptionController.text.trim(), ownerId: user.id, type: resolvedType, technique: _techniqueController.text.trim().isEmpty ? null : _techniqueController.text.trim(), dimensions: _dimensionsController.text.trim().isEmpty ? null : _dimensionsController.text.trim(), duration: _durationController.text.trim().isEmpty ? null : _durationController.text.trim(), fileName: _selectedFile?.name ?? (_removedExistingFile ? null : widget.content?.fileName), filePath: _selectedFile?.path ?? (_removedExistingFile ? null : widget.content?.filePath));
+    final item = ContentItem(
+      id: widget.content?.id ?? 'local-${DateTime.now().millisecondsSinceEpoch}',
+      title: _titleController.text.trim(),
+      year: int.parse(_yearController.text.trim()),
+      description: _descriptionController.text.trim(),
+      ownerId: user.id,
+      type: resolvedType,
+      duration: _durationController.text.trim().isEmpty ? null : _durationController.text.trim(),
+      fileName: _selectedFile?.name ?? (_removedExistingFile ? null : widget.content?.fileName),
+      filePath: _selectedFile?.path ?? (_removedExistingFile ? null : widget.content?.filePath),
+    );
 
     if (widget.isEditing) {
       final ok = await ref.read(userContentsProvider.notifier).update(item);

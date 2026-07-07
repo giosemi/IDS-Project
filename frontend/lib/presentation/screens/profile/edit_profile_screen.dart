@@ -20,8 +20,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   TextEditingController? _courseController;
   TextEditingController? _yearController;
   TextEditingController? _bioController;
-  TextEditingController? _cvController;
-  TextEditingController? _skillsController;
 
   void _initControllers(StudentProfile profile) {
     _nameController ??= TextEditingController(text: profile.fullName);
@@ -29,8 +27,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _courseController ??= TextEditingController(text: profile.course);
     _yearController ??= TextEditingController(text: profile.studyYear.toString());
     _bioController ??= TextEditingController(text: profile.bio);
-    _cvController ??= TextEditingController(text: profile.cvSummary ?? '');
-    _skillsController ??= TextEditingController(text: profile.skills.join(', '));
   }
 
   @override
@@ -40,8 +36,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _courseController?.dispose();
     _yearController?.dispose();
     _bioController?.dispose();
-    _cvController?.dispose();
-    _skillsController?.dispose();
     super.dispose();
   }
 
@@ -55,8 +49,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       course: _courseController!.text.trim(),
       studyYear: int.parse(_yearController!.text.trim()),
       bio: _bioController!.text.trim(),
-      cvSummary: _cvController!.text.trim().isEmpty ? null : _cvController!.text.trim(),
-      skills: _skillsController!.text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList(),
     );
 
     await ref.read(profileProvider.notifier).update(updated);
@@ -106,10 +98,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               TextFormField(controller: _bioController, maxLines: 4, decoration: const InputDecoration(labelText: 'Bio', alignLabelWithHint: true), validator: _required),
-              const SizedBox(height: AppSpacing.md),
-              TextFormField(controller: _cvController, maxLines: 3, decoration: const InputDecoration(labelText: 'Sintesi CV', alignLabelWithHint: true)),
-              const SizedBox(height: AppSpacing.md),
-              TextFormField(controller: _skillsController, decoration: const InputDecoration(labelText: 'Competenze', hintText: 'Separate da virgola')),
               const SizedBox(height: AppSpacing.xl),
               FilledButton(onPressed: _save, child: const Text('Salva modifiche')),
             ],

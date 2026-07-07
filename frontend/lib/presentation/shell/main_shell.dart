@@ -58,14 +58,14 @@ class MainShell extends ConsumerWidget {
       subtitle: page.subtitle,
       actions: isAuthenticated && safeIndex == 1
           ? [
-              IconButton(
-                tooltip: 'Organizza sezioni',
-                icon: const Icon(Icons.edit_outlined),
+              TextButton.icon(
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(builder: (_) => const OrganizePortfolioScreen()),
                   );
                 },
+                icon: const Icon(Icons.edit_outlined, size: 20),
+                label: const Text('Organizza sezioni'),
               ),
             ]
           : null,

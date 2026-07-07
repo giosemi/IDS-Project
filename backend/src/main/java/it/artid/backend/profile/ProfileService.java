@@ -26,8 +26,6 @@ public class ProfileService {
         if (req.getCourse()      != null) profile.setCourse(req.getCourse());
         if (req.getStudyYear()   != null) profile.setStudyYear(req.getStudyYear());
         if (req.getBio()         != null) profile.setBio(req.getBio());
-        if (req.getSkills()      != null) profile.setSkills(req.getSkills());
-        if (req.getCvSummary()   != null) profile.setCvSummary(req.getCvSummary());
         return profileRepository.save(profile);
     }
 }
