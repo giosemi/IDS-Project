@@ -28,4 +28,4 @@ mvn spring-boot:run
 
 - **Frontend**: Flutter + Riverpod
 - **Backend**: Java 21 · Spring Boot · Spring Security · JWT · JPA
-- **Database**: PostgreSQL (produzione) · H2 (sviluppo)
+- **Database**: PostgreSQL
